@@ -1,0 +1,8 @@
+{
+  "name": "dgt-xyz-workspace",
+  "private": true,
+  "workspaces": [
+    "studio-dgt-xyz",
+    "dgt-xyz"
+  ]
+}
