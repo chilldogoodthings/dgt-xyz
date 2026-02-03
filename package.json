@@ -1,9 +1,12 @@
 {
-  "name": "dgt-xyz-workspace",
+  "name": "dgt-xyz",
   "version": "0.0.0",
   "private": true,
   "workspaces": [
     "studio-dgt-xyz",
-    "dgt-xyz"
-  ]
+    "dgt-xyz-web"
+  ],
+  "overrides": {
+    "undici": "6.23.0"
+  }
 }
