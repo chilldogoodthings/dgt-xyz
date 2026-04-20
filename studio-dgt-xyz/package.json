@@ -1,5 +1,5 @@
 {
-  "name": "studio-npmdgt-xyz",
+  "name": "studio-dgt-xyz",
   "private": true,
   "version": "1.0.0",
   "main": "package.json",
@@ -9,16 +9,18 @@
     "start": "sanity start",
     "build": "sanity build",
     "deploy": "sanity deploy",
-    "deploy-graphql": "sanity graphql deploy"
+    "deploy-graphql": "sanity graphql deploy",
+    "extract": "sanity schema extract",
+    "typegen": "sanity typegen generate"
   },
   "keywords": [
     "sanity"
   ],
   "dependencies": {
-    "@sanity/vision": "^5.8.0",
+    "@sanity/vision": "^5.21.0",
     "react": "^19.1",
     "react-dom": "^19.1",
-    "sanity": "^5.8.0",
+    "sanity": "^5.21.0",
     "styled-components": "^6.1.18"
   },
   "devDependencies": {
@@ -35,6 +37,9 @@
     "singleQuote": true
   },
   "overrides": {
-    "undici": "6.23.0"
+    "js-yaml": "^3.14.2",
+    "jsdom": {
+      "undici": "5.28.4"
+    }
   }
 }

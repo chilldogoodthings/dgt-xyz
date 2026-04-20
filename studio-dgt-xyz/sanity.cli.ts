@@ -12,4 +12,8 @@ export default defineCliConfig({
      */
     autoUpdates: true,
   },
+  typegen: {
+    path: '../dgt-xyz-web/src/**/*.{ts,tsx,js,jsx}', // Where to look for queries
+    generates: '../dgt-xyz-web/src/sanity/sanity.types.ts', // Where to save types
+  },
 })

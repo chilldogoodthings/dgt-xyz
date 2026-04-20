@@ -12,7 +12,7 @@ export default defineConfig({
 
   plugins: [
     structureTool({
-      structure: (S) =>
+      structure: (S: StructureBuilder) =>
         S.list()
           .title('Website Content')
           .items([
