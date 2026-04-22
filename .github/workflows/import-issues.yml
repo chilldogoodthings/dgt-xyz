@@ -1,0 +1,17 @@
+name: Import Backlog
+on: workflow_dispatch
+
+jobs:
+  import-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Import Issues
+        uses: dsanchezcr/issue-importer-action@v1.0.0
+        with:
+          file-path: 'data/backlog.csv' # Make sure your CSV is named this
+          file-format: csv
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dry-run: false # Set to false once the test looks good!
