@@ -1,0 +1,39 @@
+title,body,milestone
+Project Environment Setup,Initialize GitHub repository and link Sanity CMS with Vercel deployment pipelines for local and cloud development.,Project Foundations
+Landing Page Scaffold,Create the base Next.js page structure with Sanity-connected placeholders for the Header Footer and Body content.,Landing Page
+Site Style Guide & Wireframes,Define the visual language including color palettes typography and layout wireframes to guide all component development.,Landing Page
+Header Component (Desktop),Develop the CMS-driven navigation bar with dynamic links and 'current page' logic for desktop viewports.,Landing Page
+Header Component (Mobile),Implement the responsive mobile navigation menu and adaptive header layout including mobile-specific interaction logic.,Landing Page
+Global Footer (Desktop),Build the CMS-driven footer component with site information and links for desktop display.,Landing Page
+Global Footer (Mobile),Apply responsive styling to the footer for mobile devices ensuring proper stacking and readability.,Landing Page
+Reusable Hero Block (Desktop),Create the foundational Hero schema and component supporting text-alignment image positioning and CTA logic.,Landing Page
+Reusable Hero Block (Mobile),Refine the Hero Block for mobile screens ensuring images and text stack appropriately for vertical consumption.,Landing Page
+Welcome Hero Section (Desktop),Implement the primary Landing Hero with right-aligned imagery and welcome messaging from the CMS.,Landing Page
+Welcome Hero Section (Mobile),Optimize the Welcome Hero for mobile viewports with responsive scaling and centered alignment.,Landing Page
+Trading Hero Section (Desktop),Render the Trading-specific block with a disabled 'More to Come' CTA and left-aligned imagery.,Landing Page
+Trading Hero Section (Mobile),Apply mobile-specific layout rules to the Trading Hero block.,Landing Page
+Technologies Hero Section (Desktop),Implement the Technology block with a functional CTA linking to the Blog page.,Landing Page
+Technologies Hero Section (Mobile),Ensure the Technologies Hero CTA and imagery are touch-friendly and responsive.,Landing Page
+Consulting Hero Section (Desktop),Build the Consulting block with a CTA leading to the Contact Us page.,Landing Page
+Consulting Hero Section (Mobile),Apply responsive layout and vertical stacking to the Consulting Hero section.,Landing Page
+Blog Page Scaffold,Create the 2-column layout scaffold for the blog list view inheriting the global project styles.,Blog Page
+Blog Post List (Desktop),Render the list of blog posts from Sanity including titles and dates in the main content column.,Blog Page
+Blog Post List (Mobile),Optimize the blog list for mobile including full-width list items and adjusted typography.,Blog Page
+Blog Sidebar Index (Desktop),Build a monthly archive jump-link sidebar grouped by year and month (descending order).,Blog Page
+Blog Sidebar Index (Mobile),Transform the sidebar index into a mobile-friendly dropdown menu for easier navigation on small screens.,Blog Page
+Blog Search & Filters (Desktop),Implement feature-flagged search and month/year filter UI placeholders in the blog header.,Blog Page
+Blog Search & Filters (Mobile),Adapt the search and filter UI for mobile viewports using optimized input sizes.,Blog Page
+Individual Post View (Desktop),Create the dynamic route for full blog articles supporting Portable Text and rich media from Sanity.,Blog Page
+Individual Post View (Mobile),Ensure long-form blog content is readable and responsive on mobile devices.,Blog Page
+Contact Page Scaffold,Setup the Contact Us page layout including the header and footer placeholders.,Contact Us Page
+Contact Form Feature (Desktop),Build the full form component including validation success (Thank You) and error (Oops) states with retry logic.,Contact Us Page
+Contact Form Feature (Mobile),Optimize form fields and submission states for mobile touch interactions and keyboard overlays.,Contact Us Page
+Vercel Deployment,Configure production environments on Vercel and link the main branch for automatic deployment.,Production Readiness
+Sanity Production Config,Configure production datasets API tokens and CORS settings for secure live data access.,Production Readiness
+CI/CD Pipeline Setup,Implement automated linting and testing via GitHub Actions to ensure code quality before merges.,Production Readiness
+Branch Protection,Establish Pull Request requirements and branch protection rules to safeguard the production code.,Production Readiness
+Live Launch Verification,Execute the final build and verify all live URLs and CMS connections in the production environment.,Production Readiness
+Localization Foundation,Architect the CMS and frontend to support English and Spanish content switching.,Future Enhancements
+Advanced Navigation Buttons,Extend the header component to support image-background buttons and modal popup triggers.,Future Enhancements
+Advertisement System,Implement pluggable ad blocks for the landing page and blog list with configurable frequency.,Future Enhancements
+Member Authentication,Develop the service layer for user accounts and permission-based CMS editing access.,Future Enhancements
