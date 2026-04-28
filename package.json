@@ -6,7 +6,5 @@
     "studio-dgt-xyz",
     "dgt-xyz-web"
   ],
-  "overrides": {
-    "undici": "6.23.0"
-  }
+  "overrides": {}
 }

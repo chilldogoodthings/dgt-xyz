@@ -1,77 +1,107 @@
-# dgt-xyz
+# dgt-xyz - Digital Ecosystem
 
-Do Good Things Front Door
-
-# DGT XYZ Project Baseline
-
-This repository contains the core **blueprints** for the DGT ecosystem, utilizing a monorepo structure to manage the Sanity CMS and the Next.js frontend application.
+Do Good Things Front Door: A high-performance monorepo utilizing Sanity CMS for headless content management and Next.js for a localized, dual-layout frontend.
 
 ---
 
 ## 📂 Project Structure
 
-To maintain a tool-agnostic core while supporting a seamless VS Code experience, the project is organized as follows:
+This monorepo is designed to be tool-agnostic while providing a seamless experience in VS Code.
 
-- **`dgt.xyz-workspace`**: (Local Only) VS Code workspace file for managing multiple project roots.
-- **`/dgt-xyz-workspace`**: The main repository root.
-- **`/dgt-xyz`**: The Next.js frontend application.
+- **`dgt-xyz-workspace`**: (Local Only) VS Code workspace file for managing multiple project roots.
+- **`/` (Root)**: The parent directory containing monorepo configuration, `.nvmrc`, and shared `package.json`.
+- **`/dgt-xyz-web`**: The Next.js frontend application (App Router).
 - **`/studio-dgt-xyz`**: The Sanity Studio "blueprints" (schemas, config, and structure).
 
 ---
 
-## 🛠 Rebuild / First-Time Setup
+## 🚀 Environment Setup (NVM)
 
-Follow these steps to restore the local environment from a fresh clone.
+This project strictly enforces a Node.js engine to ensure build stability and satisfy security requirements for packages like `undici` and `next`.
 
-### 1. Clone the Repository
+1.  **Install NVM:** Ensure [Node Version Manager](https://github.com/nvm-sh/nvm) is installed.
+2.  **Sync Node Version:** From the project root, run:
+    ```bash
+    nvm use
+    ```
+    _If the version is missing, run `nvm install` to fetch the version specified in `.nvmrc`._
+3.  **Verify Engine:**
+    ```bash
+    node -v # Expected: v22.19.0 or higher
+    ```
+
+---
+
+## 🛠 Rebuild / Installation
+
+Follow these steps to restore the local environment from a fresh clone or after a dependency reset.
+
+### 1\. Global Cleanup (If required)
+
+If switching Node versions or clearing "muddy" states, run this from the root:
 
 ```bash
-git clone https://github.com/your-username/dgt-xyz.git
-cd dgt-xyz
-
+find . -name "node_modules" -type d -prune -exec rm -rf '{}' +
+find . -name "package-lock.json" -exec rm -rf '{}' +
 ```
 
-### 2. Environment Configuration
+### 2\. Install Dependencies
 
-Create a `.env.local` file inside the `/dgt-xyz` directory to connect the frontend to the Sanity Content Lake:
+Always install from the **Root Directory** to allow the monorepo to manage the dependency tree:
 
 ```bash
-# /dgt-xyz/.env.local
-NEXT_PUBLIC_SANITY_PROJECT_ID="<projectid>"
-NEXT_PUBLIC_SANITY_DATASET="datasetname"
-NEXT_PUBLIC_SANITY_API_VERSION="apiversion"
-
+nvm use
+npm install
 ```
 
-### 3. Restore the Studio (CMS)
+### 3\. Verify Security Baseline
 
-The studio folder contains only the necessary configuration files. Dependencies and local artifacts must be rebuilt.
+```bash
+npm audit
+# Result should be 0 vulnerabilities due to root-level overrides.
+```
+
+---
+
+## 💻 Development Workflow
+
+To run the full ecosystem, open separate terminal tabs for the backend and frontend.
+
+### Restore the Studio (CMS)
 
 ```bash
 cd studio-dgt-xyz
-npm install
 npm run dev
-
 ```
 
-> **Access:** The Studio will be accessible at [http://localhost:3333](https://www.google.com/search?q=http://localhost:3333).
+> **Access:** [http://localhost:3333](https://www.google.com/search?q=http://localhost:3333)
 
-### 4. Restore the Frontend (Website)
-
-Open a new terminal window to run the Next.js application:
+### Restore the Frontend (Website)
 
 ```bash
-cd dgt-xyz
-npm install
+cd dgt-xyz-web
 npm run dev
-
 ```
 
-> **Access:** The Website will be accessible at [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000).
+> **Access:** [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000)
 
 ---
 
 ## 📝 Technical Notes
 
-- **Sanity Client:** Initialized using the modern named export `createImageUrlBuilder` from `@sanity/image-url`.
-- **Version Control:** Only source code and "blueprint" configurations are tracked. Local folders such as `node_modules`, `.next`, and `.sanity` are excluded via `.gitignore`.
+- **Route Groups:** The frontend uses `(main)` for pages with Header/Footer logic and `(bare)` for minimal/empty layouts.
+- **Sanity Client:** Initialized via `createImageUrlBuilder` from `@sanity/image-url`.
+- **Security Overrides:** High-severity vulnerabilities are managed via the `overrides` field in the root `package.json`. **Do not use `npm audit fix --force`**, as it may trigger breaking major-version jumps for the Sanity Studio.
+- **Local RAG Integration:** This repository is compatible with local AI workflows (LM Studio/Continue) for architecting Pinescript and React hooks.
+
+---
+
+## 🌍 Environment Variables
+
+Create a `.env.local` inside `/dgt-xyz-web`:
+
+```bash
+NEXT_PUBLIC_SANITY_PROJECT_ID="your_project_id"
+NEXT_PUBLIC_SANITY_DATASET="production"
+NEXT_PUBLIC_SANITY_API_VERSION="2026-04-20"
+```
