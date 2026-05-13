@@ -36,6 +36,7 @@ This monorepo is designed to be tool-agnostic while providing a seamless experie
 │   └── rules.md                  # Additional Roo-specific rules (optional)
 ├── product/                      # All design & state-machine artifacts
 │   ├── architecture/             # System-wide logic & decisions
+│   │   ├── git-workflow-branching-standards.md
 │   │   ├── site-wireframes.md
 │   │   └── future-features.md    # Localization, Members, Ads, etc.
 │   ├── design/                   # The "Global Truth" (LLM always reads this)
