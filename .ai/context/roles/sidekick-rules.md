@@ -180,14 +180,8 @@ The Sidekick may ONLY proceed with work if `project.status.name` is one of the f
 The Sidekick must expect the issue to contain a DoD section relevant to the **current column/status** it is working on (except for final-turn/Done, which is Human-triggered only). All details and file references must be expressed in the issue body.
 
 **Request/ Folder Verification**  
--The Sidekick MUST automatically create the full local issue folder structure seen below on first contact **if it does not already exist**:
 
-product/issues/<type>-<number>/
-├── request/  
-├── execution-log/  
-└── output/
-
-- Then verify the `request/` folder contents **against the exact list** in the current GitHub issue (under “Required Request Folder Files”).
+- Verify the `request/` folder contents **against the exact list** in the current GitHub issue (under “Required Request Folder Files”).
 - If any required file or subfolder listed in the GitHub issue is missing from `request/` (or its subfolders), **stop immediately**. Do not proceed with any work.
 - Document the exact missing items (with full paths) **only in the final execution-log entry**.
 - Do **not** create placeholder files. The Human is responsible for placing the real files in `request/` before or immediately after moving the issue to Ready.

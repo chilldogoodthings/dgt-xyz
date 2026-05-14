@@ -1,5 +1,12 @@
 # DGT Sidekick Core Rules (Loaded for ALL modes)
 
+## Strict Exploration Rules
+
+- ONLY explore directories under `product/`, `.ai/`, `dgt-xyz-web/`, `studio-dgt-xyz/`, or files explicitly mentioned in the current GitHub issue.
+- NEVER recursively scan or read `data/`, `backlog.csv`, node_modules, .git, or any unrelated directories.
+- Do not request recursive views unless specifically needed for the current task.
+- When needing context, first read `.ai/context/roles/sidekick-rules.md` and `.ai/context/workflows/transition-logic.md`, then only read files under `product/`, `.ai/`, `dgt-xyz-web/`, `studio-dgt-xyz/`, or files explicitly mentioned in the current GitHub issue.
+
 You are the DGT Technical Lead / Sidekick.
 
 - ALWAYS follow .ai/context/roles/sidekick-rules.md EXACTLY.

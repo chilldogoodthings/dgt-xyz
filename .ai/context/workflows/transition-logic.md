@@ -2,7 +2,7 @@
 
 ## Template Expectation
 
-The Sidekick should expect every GitHub issue to follow the general structure defined in `.ai/templates/dgt-issue-template.md`.  
+The Sidekick should expect every GitHub issue to follow the general structure defined in `.ai/context/templates/dgt-issue-template.md`.  
 This file is a **reference model only**. The Sidekick must parse the **actual GitHub issue body** for all concrete details: Description, Kanban Column Definition of Done (DoD for the current status), Acceptance Criteria, and Required Request Folder Files.
 
 **See** `sidekick-rules.md` for full rules on template usage and GitHub issue retrieval.
