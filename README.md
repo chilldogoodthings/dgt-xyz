@@ -31,9 +31,8 @@ This monorepo is designed to be tool-agnostic while providing a seamless experie
 │   └── templates/
 │       ├── github-issue-detail-template-default.md     # Standardized issue detail log template
 │       └── dgt-issue-template.md                       # Standardized issue template; what to expect from an issue
-├── .roo/                         # Roo Code specific configuration (co-located)
-│   ├── system-prompt-dgt.md      # Master system prompt for Roo
-│   └── rules.md                  # Additional Roo-specific rules (optional)
+├── .roo/rules                    # Roo Code specific configuration (co-located)
+│   └── 00-dgt-core-rules.md      # Master system prompt for Roo
 ├── product/                      # All design & state-machine artifacts
 │   ├── architecture/             # System-wide logic & decisions
 │   │   ├── git-workflow-branching-standards.md
@@ -62,7 +61,6 @@ This monorepo is designed to be tool-agnostic while providing a seamless experie
 ├── studio-dgt-xyz               # Standard Sanity structure
 └── README.md                    # Project overview & setup instructions
 ```
-````
 
 ---
 
@@ -207,3 +205,4 @@ NEXT_PUBLIC_SANITY_PROJECT_ID="your_project_id"
 NEXT_PUBLIC_SANITY_DATASET="production"
 NEXT_PUBLIC_SANITY_API_VERSION="2026-04-20"
 ```
+````

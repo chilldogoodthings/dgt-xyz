@@ -1,14 +1,15 @@
 # DGT GitHub Issue Template
 
-**Issue Type**: `story` | `bug` | `task` | `spike`  
-**ID**: `YYYYMMDD-<type>-<sequential-number>` (e.g. `20260511-story-042`)  
-**Title Format**: `YYYYMMDD-<type>-<ID>-<Short-Title>` (e.g. `20260511-story-042-landing-hero-scaffold`)
-
----
-
 ## Description
 
 <!-- Free-text overview of the work. Include context, background, and any high-level goals. -->
+
+### Acceptance Criteria
+
+- [ ] AC-1:
+- [ ] AC-2:
+- [ ] AC-3:
+<!-- Add as many as needed. Be specific and testable. -->
 
 ## Kanban Column Definition of Done (DoD)
 
@@ -35,22 +36,13 @@
 
 -
 -
--
-
-**Standard DoD for all other columns** (not editable per issue):
+- **Standard DoD for all other columns** (not editable per issue):
 
 - **Ready**: Issue has complete Acceptance Criteria, all required `request/` files are present, dependencies resolved, Human has moved ticket to Ready.
 - **Implementation Review**: Code reviewed by Human Architect, all feedback addressed, documentation updated, ticket moved by Sidekick.
 - **Staging Review**: Human Architect validated functionality in staging, all feedback addressed, performance & mobile checks complete.
 - **Deploy Review**: Human sign-off on production, monitoring checks passed.
 - **Done**: Final-turn folder created (Human triggered only), all artifacts archived, lessons learned documented (optional).
-
-## Acceptance Criteria
-
-- [ ] AC-1:
-- [ ] AC-2:
-- [ ] AC-3:
-<!-- Add as many as needed. Be specific and testable. -->
 
 ## Required Request Folder Files
 

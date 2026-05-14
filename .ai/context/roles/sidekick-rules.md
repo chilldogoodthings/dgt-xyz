@@ -23,9 +23,9 @@ A **Session** is defined as a single, continuous task cycle initiated by a speci
 The moment the Agent is asked to work on an issue:
 
 1. **Issue Folder Verification & Structure:**
-   Check if a folder for the specific issue exists in `product/issues/`.
-   If it does not exist, create it using the following format: `<yyyymmdd>-<type>-<ID>-<Title>` (e.g., `20260507-story-042-landing-hero-scaffold`).
-   Inside every issue folder, ensure the following three standard subfolders exist:
+   Check if a folder for the specific issue exists `product/issues/<type>-<number>`. (e.g., `product/issues//story-42/`)
+   If it does not exist, create it using the following format: .
+   Inside every issue folder, ensure the following three standard subfolders exist (create them if they don't exist):
 
    - `request/` — Immutable input. The agent must always check this folder first for any supporting content, specs, images, or additional task details before executing work.
    - `execution-log/` — Append-only logs for this issue (one primary log file per issue).
@@ -34,11 +34,26 @@ The moment the Agent is asked to work on an issue:
      - Process-oriented or temporary outputs stay inside `output/`.
        **See `transition-logic.md` Section 4** for detailed artifact placement rules (what stays in turn folders vs. what moves to `final-turn/`).
 
+Example folder structure:
+
+product/issues/story-42/
+├── request/  
+├── execution-log/  
+└── output/
+
 2. **Turn Number Discovery:** Scan the issue folder's `output/` subfolder (`product/issues/<issue-folder>/output/`) for existing turn folders (named `turn-N-*`). Determine the current highest N and prepare the next turn number as `(N+1)`.
 
 3. **Turn Creation:** Using the next turn number from Step 2, create the new turn folder at `product/issues/<issue-folder>/output/turn-(N+1)-(status)/`.
 
-4. **Metadata Sync:** Create the status-specific `.md` file inside the newly created turn folder. Populate it using the [default template](/.ai/templates/github-issue-detail-template-default.md).
+4. **Metadata Sync & Turn Initialization:**
+
+   - **Folder Anchoring:** All session artifacts must be created within the specific issue directory: `product/issues/<type>-<number>` where <number> is the issue number is unique. You can identify any issue folder by using its number and matching it to the folder that has the number in the place of <number> within folder name `product/issues/<type>-<number>/`. For example, if the issue number is 3, the appropriate folder name is `product/issues/story-3/`. The <type> portion of the string does not add tot he uniqueness of the issue. technically an issue with number 56 could be `bug-56` or `spike-56`. 56 or whatever value <number> is the unique attribute.
+   - **Turn Discovery:** The Sidekick shall scan the `output/` folder to determine the next sequence `N`. It must create a new folder named `turn-N-<status>/` (e.g., `turn-1-inprogress` or `turn-2-staging`).
+   - **Template Mapping:** Locate [default metadata template](/.ai/templates/github-issue-detail-template-default.md) and parse the issue body against the [dgt-issue-template.md](/.ai/templates/dgt-issue-template.md) schema.
+   - **DoD Extraction:** Extract the specific "Definition of Done" block from the GitHub issue that matches the current `<status>`.
+   - **Dynamic File Creation:** Save the populated metadata as `<status>-github-issue-details.md` inside the new turn folder.
+     - Example: If status is `Staging`, file is `staging-github-issue-details.md`.
+   - **Verification Gate:** Confirm all "Required Request Folder Files" listed in the issue are present in the local `request/` folder.
 
 5. **Status-Specific Metadata Filename:** The metadata file must be named according to the current status: `inprogress-github-issue-details.md`, `staging-github-issue-details.md`, or `deploy-github-issue-details.md`.
 
@@ -62,7 +77,7 @@ The moment the Agent is asked to work on an issue:
 - If a branding change is finalized, you must prompt the human to verify the move to `/product/design/brand/`.
 - **Finalize Exception for Done Status:**
   If the ticket is in the `Done` status and the human requests to finalize it (using phrases such as "please finalize", "finalize issue", "complete the ticket", "move to final-turn", etc.), the Sidekick must first send a confirmation message similar to:  
-  _"Please confirm that you want me to finalize issue <title> (ID <issueid>) currently in Done by creating the final-turn folder."_  
+  _"Please confirm that you want me to finalize issue <number> - <title> currently in Done by creating the final-turn folder."_  
   Upon receiving any positive confirmation ("yes", "go ahead", "sure", "please proceed", etc.), the Sidekick may create the folder `product/issues/<issue-folder>/output/final-turn/`.
 
 ## 5. Execution Logging Protocol
@@ -123,26 +138,36 @@ When a human asks the Sidekick to work on a specific issue, the human **MUST** p
 
 ### Action 1 & 2: Baseline GitHub Issue + Project Fields
 
-Run these commands in sequence to gather all required state data:
+**Environment Constants (The DGT Stack):**
 
-# Action 1: Fetch Baseline GitHub Issue Fields
+- **Owner/User:** `chilldogoodthings`
+- **Repository:** `dgt-xyz`
+- **Project Number:** 1
 
-gh issue view <ID> --json title,body,labels,state,assignees,updatedAt,createdAt,milestone
+**Execution Protocol:**
 
-# Action 2: Fetch GitHub Project & Kanban Status
+1. **Fetch Baseline GitHub Issue Fields:** Inject the issue ID into the XX as part of the "gh issue view XX" script below
 
-gh project item-list <PROJECT_ID> --owner <USER> --format json
+   gh issue view XX --repo chilldogoodthings/dgt-xyz --json title,body,labels,state,assignees,updatedAt,createdAt,milestone
 
-**Required Values to Read into Memory:**
+2. **Fetch GitHub Project & Kanban Status:** Inject the issue ID into the XX as part of the "select(.content.number == XX)" script below
 
-- title: The primary name of the task.
-- body: The full content — **parse this specifically** for Description, Kanban Column Definition of Done (DoD for the current status), Acceptance Criteria, and Required Request Folder Files.
-- labels: Used to identify type/ (e.g., bug, story) and any current manual flags.
-- state: Verify the issue is "open".
-- milestone: To understand the broader project phase context.
-- assignees: To verify the agent or human is correctly assigned.
-- updatedAt / createdAt: To determine the "freshness" of the task.
-- project.status.name: Match the issue by ID/Number to extract the current Kanban column.
+   gh project item-list 1 --owner chilldogoodthings --format json --jq '.items[] | select(.content.number == XX)'
+
+**Required Values to Read into Memory (Data Mapping):**
+
+1. **From `gh issue view` (Action 1):**
+
+   - `title`: The primary name of the task.
+   - `body`: **CRITICAL PARSE:** Extract Description, specific Column DoD, Acceptance Criteria, and Required Request Folder Files per the dgt-issue-template.md schema.
+   - `labels`, `state`, `milestone`, `assignees`: Standard metadata.
+
+2. **From `gh project item-list` (Action 2):**
+
+   - `project.status.name`: Map the `.status` field from the JSON output to this variable.
+   - **Logic Gate:** Verify `status` is an allowed Active status (Ready, In Progress, Staging, Deploy) before folder initialization.
+
+3. **Verification Gate:** Cross-reference the "Required Request Folder Files" list from the parsed body against the local `request/` folder. If any are missing, trigger the Blocker Protocol.
 
 **Critical Gating Rule**  
 The Sidekick may ONLY proceed with work if `project.status.name` is one of the following:
@@ -155,7 +180,19 @@ The Sidekick may ONLY proceed with work if `project.status.name` is one of the f
 The Sidekick must expect the issue to contain a DoD section relevant to the **current column/status** it is working on (except for final-turn/Done, which is Human-triggered only). All details and file references must be expressed in the issue body.
 
 **Request/ Folder Verification**  
-Verify the `request/` folder contents **against the list in the current GitHub issue** (not the template). If required files/folders are missing or any other blocker exists, stop immediately and document only in the final execution-log entry.
+-The Sidekick MUST automatically create the full local issue folder structure seen below on first contact **if it does not already exist**:
+
+product/issues/<type>-<number>/
+├── request/  
+├── execution-log/  
+└── output/
+
+- Then verify the `request/` folder contents **against the exact list** in the current GitHub issue (under “Required Request Folder Files”).
+- If any required file or subfolder listed in the GitHub issue is missing from `request/` (or its subfolders), **stop immediately**. Do not proceed with any work.
+- Document the exact missing items (with full paths) **only in the final execution-log entry**.
+- Do **not** create placeholder files. The Human is responsible for placing the real files in `request/` before or immediately after moving the issue to Ready.
+
+This ensures the structure is always created automatically, but required content must be provided by the Human.
 
 **Blocker Fields & Recommendations**  
 If any required fields cannot be retrieved, the issue is not "open", the Kanban status is invalid, the issue deviates significantly from expected template structure, or required `request/` files are missing, the Sidekick must:

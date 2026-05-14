@@ -51,13 +51,13 @@ The moment the Agent is asked to work on an issue:
    - `execution-log/` — Append-only logs for this issue (one primary log file per issue).
    - `output/` — All turn folders and session-specific artifacts.
 
-2. **Request Folder Verification (Critical Step):**  
-   Verify the `request/` folder contents **against the exact list in the current GitHub issue**.  
-   If any required files/folders are missing **or** any other blocker/issue/need exists:
+2. **Request Folder Verification (Critical Step):**
 
-   - Immediately stop all execution
-   - Do **not** create any missing `request/` content
-   - Document the issue(s) with full paths/descriptions **only in the final execution-log entry**
+   - The Sidekick MUST automatically create the full local issue folder structure (`request/`, `execution-log/`, `output/`) if it does not already exist.
+   - Then verify the `request/` folder contents **against the exact list** in the current GitHub issue (under “Required Request Folder Files”).
+   - If any required file or subfolder is missing from `request/` (or its subfolders), **stop immediately**. Do not proceed with any work.
+   - Document the exact missing items (with full paths) **only in the final execution-log entry**.
+   - Do **not** create placeholder files. The Human is responsible for placing the real files into `request/` before or right after moving the issue to Ready.
    - Wait for the next human turn
 
 3. **Turn Number Discovery:** Scan the issue folder's `output/` subfolder for existing turn folders (named `turn-N-*`). Determine the current highest N and prepare the next turn number as `(N+1)`.
