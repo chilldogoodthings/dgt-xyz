@@ -95,6 +95,27 @@ The system uses an `auto_router` to optimize performance and cost:
 - **Simple Tasks (DeepSeek):** Routed to `dgt-base-model`. Used for quick questions, "Ask" mode, and basic code snippets.
 - **Complex Tasks (Kimi 2.6):** Routed to `dgt-arch-model`. Triggered for architecture, heavy refactors, or when using the `@complex` signal.
 
+### 4. Stop / Kill LiteLLM Proxy
+
+When you need to stop the proxy (e.g. after finishing work or before restarting):
+
+```bash
+# Recommended way
+pkill -f litellm
+
+# Alternative (if pkill doesn't work)
+lsof -ti:4000 | xargs kill -9
+```
+
+Verification:
+
+```bash
+ps aux | grep litellm
+```
+
+You should see no running LiteLLM processes.
+Tip: Once we implement the npm scripts in Phase 5, you will be able to simply run npm run sidekick:down.
+
 ---
 
 ## 🚀 Environment Setup (NVM)
@@ -173,7 +194,7 @@ npm run dev
 
 All work in this project is driven through GitHub issues that follow a standardized structure.
 
-- **Canonical Template**: `.ai/templates/dgt-issue-template.md` — This is the **reference model** that defines the expected sections in every GitHub issue (Description, Kanban Column DoD, Acceptance Criteria, Required Request Folder Files, etc.).
+- **Canonical Template**: `.ai/context/templates/dgt-issue-template.md` — This is the **reference model** that defines the expected sections in every GitHub issue (Description, Kanban Column DoD, Acceptance Criteria, Required Request Folder Files, etc.).
 - Every issue folder under `product/issues/` must contain:
   - `request/` — Immutable input files (explicitly listed in the GitHub issue)
   - `execution-log/` — Append-only logs
