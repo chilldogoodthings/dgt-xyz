@@ -1,0 +1,25 @@
+model_list:
+  # TIER 1: Simple/Fast Model (DeepSeek)
+  - model_name: dgt-base-model
+    litellm_params:
+      model: deepseek/deepseek-v4-flash
+      api_key: os.environ/DEEPSEEK_API_KEY
+
+  # TIER 2: Architectural/Heavy Model (Kimi 2.6)
+  - model_name: dgt-arch-model
+    litellm_params:
+      model: moonshot/kimi-k2.6 # Updated to Kimi 2.6
+      api_key: os.environ/MOONSHOT_API_KEY
+      # Kimi 2.6 specific: enable reasoning for heavy tasks
+      extra_body:
+        thinking: { "enabled": true }
+
+  # THE ROUTER: This is what the user/app actually calls
+  - model_name: dgt-smart-coder
+    litellm_params:
+      model: auto_router/complexity_router
+      complexity_router_config:
+        tiers:
+          SIMPLE: dgt-base-model # Routes "Simple" prompts here
+          REASONING: dgt-arch-model # Routes "Heavy" prompts to Kimi
+        complexity_router_default_model: dgt-base-model

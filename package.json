@@ -1,10 +1,23 @@
 {
   "name": "dgt-xyz",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "sidekick:setup": "bash .ai/scripts/sidekick-setup.sh",
+    "sidekick:up": "bash .ai/scripts/sidekick.sh",
+    "sidekick:down": "pkill -f litellm || true",
+    "dev:web": "bash .ai/scripts/ensure-node.sh && cd dgt-xyz-web && npm run dev",
+    "dev:studio": "bash .ai/scripts/ensure-node.sh && cd studio-dgt-xyz && npm run dev",
+    "install:all": "npm install --workspace=dgt-xyz-web --workspace=studio-dgt-xyz",
+    "clean": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' + && find . -name 'package-lock.json' -exec rm -rf '{}' +",
+    "audit": "npm audit"
+  },
   "workspaces": [
-    "studio-dgt-xyz",
-    "dgt-xyz-web"
+    "dgt-xyz-web",
+    "studio-dgt-xyz"
   ],
   "overrides": {}
 }
