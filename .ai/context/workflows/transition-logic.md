@@ -21,7 +21,7 @@ The Agent must identify the current GitHub column to determine the required file
 
 | Current Column  | Sidekick Action                   | Required File Output                                     | Next Column        |
 | --------------- | --------------------------------- | -------------------------------------------------------- | ------------------ |
-| **Ready**       | Tasking                           | `inprogress-github-issue-details.md`                     | **In Progress**    |
+| **Ready**       | Auto-Advance & Tasking            | `inprogress-github-issue-details.md`                     | **In Progress**    |
 | **In Progress** | Execution                         | `inprogress-github-issue-details.md` (if new turn)       | **Impl. Review**   |
 | **Staging**     | Validation                        | `staging-github-issue-details.md`                        | **Staging Review** |
 | **Deploy**      | Production                        | `deploy-github-issue-details.md`                         | **Deploy Review**  |
@@ -30,6 +30,7 @@ The Agent must identify the current GitHub column to determine the required file
 **Important Notes:**
 
 - The Sidekick shall **never** be asked to work on any **Review** columns (Implementation Review, Staging Review, Deploy Review).
+- **The Ready Column Lifespan:** An issue remaining in the **Ready** column is considered idle. The moment the Sidekick initializes a task cycle on a Ready ticket, it must immediately execute a Kanban move to **In Progress** as its very first active command. Actual code tasking, component generation, or architecture exploration must only occur under an active **In Progress** state.
 - The **Done** status is only actionable by the Sidekick when the human **explicitly** requests finalization (e.g. “please finalize the ticket”, “finalize issue”, “move to final-turn”, etc.).
 - Before proceeding, the Sidekick **must check** whether `product/issues/<issue-folder>/output/final-turn/` already exists. If it does, log the situation and stop (no further action).
 - When finalizing:
@@ -42,16 +43,24 @@ The Agent must identify the current GitHub column to determine the required file
 
 The moment the Agent is asked to work on an issue:
 
-1. **Issue Folder Verification & Structure:**  
+1. **GitHub-First State Refresh (Mandatory):**
+
+   - **Before doing anything else**, execute the GitHub retrieval commands defined in `sidekick-rules.md` Section 9 (“GitHub Issue & Project Data Retrieval Protocol”).
+   - Capture the current live column status from the GitHub Project (`project.status.name`).
+   - Store this value in memory as `CURRENT_GITHUB_STATUS`.
+   - Log the retrieved status immediately in the initial log entry.
+   - This value is now the single source of truth for all subsequent decisions in this session.
+
+2. **Issue Folder Verification & Structure:**  
    Check if a folder for the specific issue exists in `product/issues/`.  
    If it does not exist, create it using the following format: `<yyyymmdd>-<type>-<ID>-<Title>`.  
    Inside every issue folder, ensure the following three standard subfolders exist:
 
    - `request/` — Immutable input. The agent must always check this folder first for files **explicitly listed in the current GitHub issue** (under "Required Request Folder Files").
-   - `execution-log/` — Append-only logs for this issue (one primary log file per issue).
+   - `execution-log/` — Append-only logs for this issue containing exactly one file: `issue-logs.md` (one primary log file per issue across its entire lifecycle).
    - `output/` — All turn folders and session-specific artifacts.
 
-2. **Request Folder Verification (Critical Step):**
+3. **Request Folder Verification (Critical Step):**
 
    - The Sidekick MUST automatically create the full local issue folder structure (`request/`, `execution-log/`, `output/`) if it does not already exist.
    - Then verify the `request/` folder contents **against the exact list** in the current GitHub issue (under “Required Request Folder Files”).
@@ -60,16 +69,27 @@ The moment the Agent is asked to work on an issue:
    - Do **not** create placeholder files. The Human is responsible for placing the real files into `request/` before or right after moving the issue to Ready.
    - Wait for the next human turn
 
-3. **Turn Number Discovery:** Scan the issue folder's `output/` subfolder for existing turn folders (named `turn-N-*`). Determine the current highest N and prepare the next turn number as `(N+1)`.
+4. **Turn Number Discovery & Status Comparison:**
 
-4. **Turn Creation:** Using the next turn number from Step 3, create the new turn folder at `product/issues/<issue-folder>/output/turn-(N+1)-(status)/`.
+   - Scan the issue folder’s `output/` subfolder for existing turn folders (`turn-N-*`).
+   - Identify the highest existing turn number (`N`) and the status portion of the most recent turn folder (e.g., `turn-3-staging` → status = `staging`).
+   - Compare the status of the **most recent local turn folder** against `CURRENT_GITHUB_STATUS`:
+     - **If they match** → Continue working inside the most recent turn folder. Do **not** create a new turn folder yet. Append new artifacts/logs to the existing turn folder.
+     - **If they do not match** (status changed — whether forward or backward human move) → Prepare to create a **new** turn folder using the next sequential number (`N+1`) and the current `CURRENT_GITHUB_STATUS` (e.g., `turn-4-staging` or `turn-4-inprogress`).
+   - Record the comparison result and decision in the initial log entry.
 
-5. **Metadata Sync:** Create the status-specific `.md` file inside the newly created turn folder.  
-   **These metadata files are pure snapshots of the GitHub issue state only** — they must not contain free-form Agent notes or commentary.
+5. **Turn Creation (Only When Status Changed):**
 
-6. **Task Execution:** Perform the specific technical work defined by the GitHub issue (Title, Body, Definition of Done, and Acceptance Criteria).
+   - If the comparison in Step 4 determined that a new turn is needed, create the new turn folder at:
+     `product/issues/<issue-folder>/output/turn-(N+1)-(status)/`
+   - Use the exact status name from `CURRENT_GITHUB_STATUS` (lowercase, matching existing patterns such as `inprogress`, `staging`, `deploy`).
+   - If the comparison showed the status is unchanged, skip this step and work inside the existing latest turn folder.
 
-7. **Post-Execution Log:** Immediately upon completion or termination of the task, append the final entry (see Section 4).
+6. **Metadata Sync:** Use the CURRENT_GITHUB_STATUS captured in Step 1 when naming the metadata file (e.g., staging-github-issue-details.md). Read the local text-logging layout file from `.ai/context/templates/github-issue-detail-template-default.md`. Fill it completely using the snapshot data parsed out of the actual GitHub issue body. Save this file locally inside the newly created turn folder as a pure, status-specific metadata snapshot named strictly according to the current column status (i.e., `inprogress-github-issue-details.md`, `staging-github-issue-details.md`, or `deploy-github-issue-details.md`). **These metadata files are pure snapshots of the GitHub issue state only** — they must not contain free-form Agent notes or commentary.
+
+7. **Task Execution:** Perform the specific technical work defined by the GitHub issue (Title, Body, Definition of Done, and Acceptance Criteria).
+
+8. **Post-Execution Log:** Immediately upon completion or termination of the task, append the final entry (see Section 4).
 
 ## 4. Output Folder Structure & Artifact Rules
 
@@ -88,15 +108,13 @@ Only permanent, non-code deliverables are moved/copied into `final-turn/` during
 
 ## 5. Execution Logging Protocol (Strict Syntax)
 
-- Every session has exactly **two logs**:
-  - **Log #1 (Initial):** Immediately upon receipt of the prompt to declare your plan.
-  - **Log #2 (Final):** Immediately upon completion or termination — this is the **only** place where blockers, missing files, or other issues are documented in detail.
+- Every session has exactly **two log entries** appended to the single `product/issues/<issue-folder>/execution-log/issue-logs.md` file:
+  - **Log Entry #1 (Initial):** Appended immediately upon receipt of the prompt to declare your plan.
+  - **Log Entry #2 (Final):** Appended immediately upon completion or termination — this is the **only** place where blockers, missing files, or other issues are documented in detail.
 
-**Syntax:**  
-`[timestamp YYYYMMdd:HH24:mm:ss] [ISSUE STATUS]::: [Summary of requested work or completed actions]`
+**Syntax:** `[timestamp YYYYMMdd:HH24:mm:ss] [ISSUE STATUS]::: [Summary of requested work or completed actions]`
 
-**Final Log Guidance:**  
-Include any missing `request/` files (with full paths), blockers, or human input needed.
+**Final Log Guidance:** Include any missing `request/` files (with full paths), blockers, or human input needed.
 
 ## 6. One-Column Move & Finalize Rules
 
@@ -104,4 +122,4 @@ Include any missing `request/` files (with full paths), blockers, or human input
 
 ---
 
-_Last Updated: 2026-05-11 – Aligned with dgt-issue-template.md and sidekick-rules.md_
+_Last Updated: 2026-06-01 – Aligned with dgt-issue-template.md and sidekick-rules.md_

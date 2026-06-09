@@ -7,6 +7,12 @@
 
 # Get absolute path to the project root
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+# ====================== NODE VERSION ENFORCEMENT ======================
+# Ensure correct Node.js version (via .nvmrc) before any other operations
+source "$PROJECT_ROOT/.ai/scripts/ensure-node.sh"
+# =====================================================================
+
 VENV="$PROJECT_ROOT/.ai/infra/venv/bin/activate"
 CONFIG="$PROJECT_ROOT/.ai/infra/router-config.yaml"
 LOG="$PROJECT_ROOT/.ai/infra/litellm.log"

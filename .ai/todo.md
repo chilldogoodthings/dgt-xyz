@@ -54,7 +54,7 @@
    Exactly: Backlog → Ready → In Progress → Implementation Review → Staging → Staging Review → Deploy → Deploy Review → Done
 
 7. **Create GitHub Issue Template**  
-   Create `ai/templates/dgt-issue-template.md`
+   Create `ai/context/templates/dgt-issue-template.md`
 
 8. **Create First Meta-Issue**  
    Title: `20260428-setup-roo-dgt-workflow` → Move to **Ready**
@@ -101,7 +101,7 @@
 
 ---
 
-### **Phase 4: DGT Folder & Session Workflow Validation (1 hour)**
+### **Phase 4: DGT Folder & Session Workflow Validation (1 hour)** **COMPLETED**
 
 14. **Create First Test Story Folder**
 
@@ -111,7 +111,7 @@
 
 ---
 
-### **Phase 5: Monorepo & Script Integration (45–60 min)**
+### **Phase 5: Monorepo & Script Integration (45–60 min)** **COMPLETED**
 
 19. **Update Root package.json**
 
@@ -132,7 +132,7 @@
 
 ---
 
-### **Phase 6: Website Project Integration & Final Validation**
+### **Phase 6: Website Project Integration & Final Validation** **COMPLETED**
 
 21. Initialize `dgt-xyz-web` (Next.js + Sanity) and `studio-dgt-xyz`.
 
