@@ -19,3 +19,11 @@
 [20260609:15:44:54] [DEPLOY REVIEW]::: Session started for issue #39 "Test Issue #1 For Agentic Orchestration Within VS Code". User requested finalization again. GitHub-First State Refresh completed. CURRENT_GITHUB_STATUS: Deploy Review. Issue is not in Done column — per sidekick-rules.md Section 4, finalization is only permitted when the ticket is in Done. Bailing with message to user to move to Done first.
 
 [20260609:15:44:54] [DEPLOY REVIEW]::: Session ended for issue #39. Finalization blocked: issue is in Deploy Review, not Done. User must manually move the ticket from Deploy Review → Done on the GitHub Project board, then request finalization again.
+
+[20260610:14:24:00] [DEPLOY REVIEW]::: Session started for issue #39 "Test Issue #1 For Agentic Orchestration Within VS Code". User requested work on the issue. GitHub-First State Refresh completed. CURRENT_GITHUB_STATUS: Deploy Review — a human-only review column, not an actionable Sidekick status (only Ready, In Progress, Staging, Deploy are actionable). Per sidekick-rules.md Section 9 gating rules and previous session precedent, no work can be performed. User was informed of the gating rule and offered options: move to Done for finalization, move to Deploy for re-execution, or cancel. User chose to leave it in Deploy Review and cancel the session.
+
+[20260610:14:24:00] [DEPLOY REVIEW]::: Session ended for issue #39. User elected to leave issue in Deploy Review. No changes made. Human must manually move the ticket to Done (for finalization) or Deploy (for re-execution) when ready.
+
+[20260610:14:25:00] [DONE]::: Finalization session started for issue #39 "Test Issue #1 For Agentic Orchestration Within VS Code". GitHub-First State Refresh completed. CURRENT_GITHUB_STATUS: Done. Issue is CLOSED. Confirmation prompt sent to user — user confirmed finalization. Proceeding with final-turn/ creation and archiving.
+
+[20260610:14:27:00] [DONE]::: Finalization completed for issue #39 "Test Issue #1 For Agentic Orchestration Within VS Code". Final-turn folder created at product/issues/story-39/output/final-turn/. Archived non-code artifacts: inprogress-github-issue-details.md, staging-github-issue-details.md, deploy-github-issue-details.md. No production code changes were required (test issue). Issue #39 is fully finalized and closed.

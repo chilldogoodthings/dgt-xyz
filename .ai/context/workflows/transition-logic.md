@@ -53,7 +53,7 @@ The moment the Agent is asked to work on an issue:
 
 2. **Issue Folder Verification & Structure:**  
    Check if a folder for the specific issue exists in `product/issues/`.  
-   If it does not exist, create it using the following format: `<yyyymmdd>-<type>-<ID>-<Title>`.  
+   If it does not exist, create it using the following format: `<type>-<ID>`.  
    Inside every issue folder, ensure the following three standard subfolders exist:
 
    - `request/` — Immutable input. The agent must always check this folder first for files **explicitly listed in the current GitHub issue** (under "Required Request Folder Files").
@@ -78,14 +78,25 @@ The moment the Agent is asked to work on an issue:
      - **If they do not match** (status changed — whether forward or backward human move) → Prepare to create a **new** turn folder using the next sequential number (`N+1`) and the current `CURRENT_GITHUB_STATUS` (e.g., `turn-4-staging` or `turn-4-inprogress`).
    - Record the comparison result and decision in the initial log entry.
 
-5. **Turn Creation (Only When Status Changed):**
+5. **Turn Creation & Retry Handling**:
 
-   - If the comparison in Step 4 determined that a new turn is needed, create the new turn folder at:
-     `product/issues/<issue-folder>/output/turn-(N+1)-(status)/`
-   - Use the exact status name from `CURRENT_GITHUB_STATUS` (lowercase, matching existing patterns such as `inprogress`, `staging`, `deploy`).
-   - If the comparison showed the status is unchanged, skip this step and work inside the existing latest turn folder.
+   - Always perform a full GitHub-First State Refresh, including fetching the latest comments on the issue.
+   - Compare CURRENT_GITHUB_STATUS against the most recent local turn folder for that status.
+   - **Create a new turn folder** (incrementing the turn number) in these cases:
+     - The GitHub status has changed.
+     - There are signals of human intervention or iteration even if the status matches the previous turn (new comments since last turn, `updatedAt` timestamp is newer, ticket was moved back into this column, AC/DoD changes, or explicit human request to re-work).
+   - Turn folder path format: `product/issues/<issue-folder>/output/turn-(N+1)-(status)/`
+     - Use the exact normalized status name from `CURRENT_GITHUB_STATUS` (lowercase, e.g. `inprogress`, `staging`, `deploy`, etc.).
+   - If no new turn is needed (true no-op continuation), continue working inside the existing latest turn folder.
+   - Every new turn must create a fresh metadata snapshot that includes current GitHub data and a summary of recent comments.
 
 6. **Metadata Sync:** Use the CURRENT_GITHUB_STATUS captured in Step 1 when naming the metadata file (e.g., staging-github-issue-details.md). Read the local text-logging layout file from `.ai/context/templates/github-issue-detail-template-default.md`. Fill it completely using the snapshot data parsed out of the actual GitHub issue body. Save this file locally inside the newly created turn folder as a pure, status-specific metadata snapshot named strictly according to the current column status (i.e., `inprogress-github-issue-details.md`, `staging-github-issue-details.md`, or `deploy-github-issue-details.md`). **These metadata files are pure snapshots of the GitHub issue state only** — they must not contain free-form Agent notes or commentary.
+
+**Handling GitHub Issue Comments**
+
+- Pull latest issue comments (via `gh issue view <ISSUE_NUMBER> --comments` on your local machine).
+- Read the comments to help build context for the current work.
+- Should `.ai/context/templates/github-issue-detail-template-default.md` request Github Issue Comments, this is how you should retrieve them in order to apply them to the metadata file.
 
 7. **Task Execution:** Perform the specific technical work defined by the GitHub issue (Title, Body, Definition of Done, and Acceptance Criteria).
 
@@ -100,7 +111,7 @@ Every issue folder contains an `output/` directory with the following guidelines
 - **`turn-N-deploy/`** → Production deployment artifacts (release notes, final verification screenshots, post-deploy checklists, etc.).
 - **`final-turn/`** → **Archive only** (Human-triggered). Contains final non-code deliverables.
   - Code changes **stay** in their permanent locations (`dgt-xyz-web/`, etc.).
-  - Non-code artifacts (style guides, images, wireframes, design docs, release notes, etc.) are copied here from previous turns for long-term reference.
+  - **Reverse Chronological Asset Extraction Protocol:** Non-code artifacts (style guides, images, wireframes, design docs, etc.) must not be globally copied using broad wildcards across all previous turns. The Sidekick shall parse the explicit artifact filenames specified within the active issue's `Done DoD` section. The Sidekick must inspect historical local folders in reverse chronological order—beginning with the highest-indexed active turn (e.g., `turn-6-staging`, then `turn-5-inprogress`, downwards)—and extract the target non-code deliverable **exclusively** from the most recent, highest-numbered turn folder containing it. Older iterations or rejected drafts residing within lower-indexed turn folders must be structurally ignored.
 
 **General Rule**:  
 Temporary or session-specific files stay inside their respective `turn-N-*` folder.  

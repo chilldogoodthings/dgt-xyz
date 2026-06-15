@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="ballGrad" cx="40%" cy="35%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="85%" stop-color="#e0e0e0"/>
+      <stop offset="100%" stop-color="#b0b0b0"/>
+    </radialGradient>
+    <radialGradient id="shadowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(0,0,0,0.3)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Shadow -->
+  <ellipse cx="260" cy="460" rx="120" ry="20" fill="url(#shadowGrad)"/>
+
+  <!-- Ball base -->
+  <circle cx="250" cy="250" r="180" fill="url(#ballGrad)" stroke="#888" stroke-width="2"/>
+
+  <!-- Pentagon (center) -->
+  <polygon points="250,190 278,210 270,242 230,242 222,210"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Pentagon (top) -->
+  <polygon points="250,100 268,115 263,138 237,138 232,115"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Pentagon (bottom) -->
+  <polygon points="250,360 268,375 263,398 237,398 232,375"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Pentagon (left) -->
+  <polygon points="130,200 152,190 158,215 148,238 126,228"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Pentagon (right) -->
+  <polygon points="370,200 392,190 398,215 388,238 366,228"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Pentagon (top-left) -->
+  <polygon points="155,115 175,108 180,130 168,148 148,140"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Pentagon (top-right) -->
+  <polygon points="345,115 365,108 370,130 358,148 338,140"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Pentagon (bottom-left) -->
+  <polygon points="155,375 175,368 180,390 168,408 148,400"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Pentagon (bottom-right) -->
+  <polygon points="345,375 365,368 370,390 358,408 338,400"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Pentagon (left-bottom) -->
+  <polygon points="100,290 120,280 128,302 116,322 96,312"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Pentagon (right-bottom) -->
+  <polygon points="400,290 420,280 428,302 416,322 396,312"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Pentagon (left-top) -->
+  <polygon points="100,180 120,170 128,192 116,212 96,202"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Pentagon (right-top) -->
+  <polygon points="400,180 420,170 428,192 416,212 396,202"
+           fill="#333" stroke="#222" stroke-width="2"/>
+
+  <!-- Highlight/shine -->
+  <ellipse cx="210" cy="190" rx="50" ry="35" fill="rgba(255,255,255,0.3)" transform="rotate(-20,210,190)"/>
+</svg>

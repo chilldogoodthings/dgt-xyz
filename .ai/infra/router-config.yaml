@@ -1,25 +1,37 @@
 model_list:
-  # TIER 1: Simple/Fast Model (DeepSeek)
+  # TIER 1: Simple/Fast Model (Direct to DeepSeek Official API)
   - model_name: dgt-base-model
     litellm_params:
-      model: deepseek/deepseek-v4-flash
+      model: deepseek/deepseek-chat
       api_key: os.environ/DEEPSEEK_API_KEY
+      api_base: "https://api.deepseek.com/v1" # Hardcoded boundary
 
-  # TIER 2: Architectural/Heavy Model (Kimi 2.6)
+  # TIER 2: Architectural/Heavy Model (Direct to Moonshot API)
   - model_name: dgt-arch-model
     litellm_params:
-      model: moonshot/kimi-k2.6 # Updated to Kimi 2.6
+      model: moonshot/kimi-k2.6
       api_key: os.environ/MOONSHOT_API_KEY
-      # Kimi 2.6 specific: enable reasoning for heavy tasks
+      api_base: "https://api.moonshot.cn/v1" # Hardcoded boundary
       extra_body:
         thinking: { "enabled": true }
 
-  # THE ROUTER: This is what the user/app actually calls
+  # THE ROUTER: Roo Code targets this for GitHub issues / code text
   - model_name: dgt-smart-coder
     litellm_params:
       model: auto_router/complexity_router
       complexity_router_config:
         tiers:
-          SIMPLE: dgt-base-model # Routes "Simple" prompts here
-          REASONING: dgt-arch-model # Routes "Heavy" prompts to Kimi
+          SIMPLE: dgt-base-model
+          REASONING: dgt-arch-model
         complexity_router_default_model: dgt-base-model
+
+  # THE IMAGE GENERATOR: Sent exclusively to DeepInfra
+  - model_name: flux-direct
+    litellm_params:
+      model: deepinfra/black-forest-labs/FLUX-1-dev
+      api_key: os.environ/DEEPINFRA_API_KEY
+      api_base: "https://api.deepinfra.com/v1/openai" # Hardcoded boundary
+
+# THE ISOLATED INTERCEPTOR
+router_settings:
+  image_model: "flux-direct" # ONLY intercepts /v1/images/generations payloads

@@ -7,7 +7,7 @@ echo "🚀 Setting up LiteLLM virtual environment..."
 # Only create venv if it doesn't exist
 if [ ! -d "$VENV_DIR" ]; then
     echo "→ Creating new virtual environment..."
-    /opt/homebrew/opt/python@3.13/bin/python3.13 -m venv "$VENV_DIR" --upgrade-deps
+    python3 -m venv "$VENV_DIR" --upgrade-deps
 else
     echo "→ Virtual environment already exists. Skipping creation."
 fi

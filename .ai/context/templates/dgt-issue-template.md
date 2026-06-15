@@ -36,6 +36,12 @@
 
 -
 -
+
+### Done DoD (Finalization Deliverables)
+
+- [ ] Final approved non-project assets to archive (e.g., final-image.png, style-guide.pdf)
+- [ ] Programmatic validation: Extract only the latest version from the highest-indexed turn folder
+
 - **Standard DoD for all other columns** (not editable per issue, for context only):
 
 - **Ready**: Issue has complete Acceptance Criteria, all required `request/` files are present, dependencies resolved, Human has moved ticket to Ready.

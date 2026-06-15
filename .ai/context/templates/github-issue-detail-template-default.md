@@ -27,3 +27,10 @@
 ## 🎯 Implementation Goals (DoD)
 
 [Derived from the "In Progress DoD" section of the issue body]
+
+**Total Comments:** [TOTAL_COMMENTS]  
+**Snapshot Timestamp:** [TIMESTAMP]
+
+### Comments (Newest First)
+
+[COMMENTS_LOG]

@@ -66,6 +66,7 @@ npm run sidekick:up
 3. Base URL: `http://localhost:4000`
 4. API Key: Any string (e.g. `sk-1234`)
 5. Refresh Models → Use `dgt-smart-coder` (simple) / `dgt-arch-model` (complex).
+6. Automated Asset Generation: The router natively intercepts image generations on the standard /v1/images/generations route. Target the explicit flux-direct model identifier to fire synchronous Flux image generation directly into your workspace.
 
 ### 3. Stop the Proxy
 
@@ -153,6 +154,7 @@ All work follows the standardized process in `.ai/context/templates/dgt-issue-te
 ```env
 DEEPSEEK_API_KEY=sk-...
 MOONSHOT_API_KEY=sk-...
+DEEPINFRA_API_KEY=...
 ```
 
 **Frontend `dgt-xyz-web/.env.local`**:

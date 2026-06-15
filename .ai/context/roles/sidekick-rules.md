@@ -23,7 +23,9 @@ A **Session** is defined as a single, continuous task cycle initiated by a speci
 The moment the Agent is asked to work on an issue:
 
 **GitHub-First State Refresh (Mandatory – Single Source of Truth):**
-The very first action in any session (before any folder checks, turn discovery, or task execution) **MUST** be to execute the full GitHub retrieval protocol defined in Section 9 below. Capture `CURRENT_GITHUB_STATUS` from the live GitHub Project board. This value overrides all local turn folders and becomes the authoritative status for the entire session. All subsequent logic (turn creation, metadata naming, logging tags, and DoD selection) must use this live status.
+
+- The very first action in any session (before any folder checks, turn discovery, or task execution) **MUST** be to execute the full GitHub retrieval protocol defined in Section 9 below. Capture `CURRENT_GITHUB_STATUS` from the live GitHub Project board. This value overrides all local turn folders and becomes the authoritative status for the entire session. All subsequent logic (turn creation, metadata naming, logging tags, and DoD selection) must use this live status.
+- As part of the GitHub-First State Refresh, always fetch the latest comments on the issue. Analyze them for human feedback, refinement requests, new requirements, or retry signals. Include a clear summary of relevant/recent comments in the session's metadata snapshot and execution log. Use comment context to influence decisions (e.g. whether to re-generate assets, address feedback, or treat the session as an iteration even if the status matches a previous turn).
 
 1. **Issue Folder Verification & Structure:**
    Check if a folder for the specific issue exists `product/issues/<type>-<number>`. (e.g., `product/issues//story-42/`)
@@ -63,10 +65,8 @@ product/issues/story-42/
 6. **Task Execution:** Perform the specific technical work defined by the GitHub issue (Title, Body, Definition of Done, and Acceptance Criteria).
 
    - **File Creation Whitelist Constraint:** You are strictly forbidden from creating management, meta-tracking, or checklist files (e.g., todo lists, play-by-plays, or internal task files) that do not directly contribute to the issue's end product. Every file you create must fall strictly into one of two categories:
-
    1. **Protocol Artifacts:** Only the specific logging, metadata snapshot, or archival files explicitly mandated by the text of `sidekick-rules.md` and `transition-logic.md`.
    2. **Issue Deliverables:** Technical code, assets, or documentation files explicitly required to fulfill the GitHub issue body's Acceptance Criteria or Description.
-
    - **Kanban Column Transitions:** When updating the issue status on the GitHub Project board to fulfill the Definition of Done (DoD), you should execute transitions **optimistically** using the hardcoded mappings in the **GitHub Project Kanban Transitions (Zero-Discovery Protocol)** first. After execution, always validate that the target status was successfully achieved and no errors occurred. If the initial update fails (e.g., due to a global node error), you are permitted to run necessary fallback discovery commands (`gh project view` or `gh project field-list`) to locate the updated IDs and attempt to complete the transition.
 
      Follow these strict protocols based on the outcome:
@@ -106,6 +106,7 @@ product/issues/story-42/
   **Finalization Execution Protocol:** When building the `final-turn/` folder, you must execute the archiving rules strictly defined in `transition-logic.md`:
   - **Prune All Code:** Production code changes and application files must remain permanently inside their respective framework directories (e.g., `dgt-xyz-web/`, `studio-dgt-xyz/`). Do not copy code files into the archive.
   - **Isolate Non-Code Assets:** Copy only non-code deliverables, high-level documentation summaries, style assets, images, release notes, or design mockups from previous working turn folders (`turn-N-*`) directly into the root of `final-turn/` for long-term reference.
+  - **Asset Assembly & Command Execution Boundary:** You must actively parse the `Done DoD (Finalization Deliverables)` block from the live GitHub issue body to build your inventory of non-project files to copy. You are strictly forbidden from executing broad shell wildcards or pattern-matching sweeps (e.g., `cp turn-*/*.*`) that capture duplicated files across multiple turn histories. You must target the single, highest-indexed folder path for each asset based on the reverse-chronological lookup rules in `transition-logic.md`, and declare those explicit source file paths uniquely within your `cp` or `mv` terminal execution strings.
 
 ## 5. Execution Logging Protocol
 
@@ -267,3 +268,19 @@ When editing an item's status, map the target column name directly to its corres
 
 Skip all metadata lookups and execute the status update on the first attempt using this exact syntax:
 gh project item-edit --id "[ITEM_ID]" --project-id "PVT_kwHODzjob84BVacb" --field-id "PVTSSF_lAHODzjob84BVacbzhQ2ag0" --single-select-option-id "[OPTION_ID]"
+
+## 11. Asset Generation & Management Rules
+
+1. **Priority: Use LiteLLM Proxy Image Endpoint First**  
+   For any task requiring a visual asset (logos, icons, illustrations, backgrounds, test images, etc.), **always prioritize** generating the asset via the running local LiteLLM proxy. You must execute an HTTP POST request directly against the local image endpoint (`http://localhost:4000/v1/images/generations`).
+
+2. **The Silent Routing Guarantee:**  
+   When hitting the local image endpoint, you can safely pass your active text model identifier (or `"flux-direct"`). Trust that the LiteLLM proxy will automatically intercept this specific payload at the network layer and route it efficiently to the appropriate synchronous high-speed Flux model without disrupting your chat context. Always request the `response_format` as `"b64_json"` for direct local processing.
+
+3. When the image payload returns, immediately decode the raw base64 bytes or download the URL and write the asset to disk. Do not attempt to install local image compilation libraries (like Pillow or cairosvg) to draw the graphic manually.
+
+4. Save assets using descriptive kebab-case filenames directly into the appropriate project or issue folder (e.g., `public/images/`, `src/assets/`, or `product/issues/<type>-<number>/output/...`). If the upstream model returns a standard size (like 512x512) and the criteria demands a specific resolution (like 500x500), use the native macOS `sips` command to resize it instantly.
+
+5. Update any relevant CSS, HTML, or component files to reference the new local asset path.
+
+6. **Fallback Rule**: Only use non-AI text-based methods (SVG, CSS shapes) if a connection to the local LiteLLM proxy port fails entirely, or if the task explicitly demands vector code.
